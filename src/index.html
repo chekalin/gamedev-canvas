@@ -33,7 +33,7 @@
 
     var paddleHeight = 10;
     var paddleWidth = 75;
-    var paddleX = (canvas.width - paddleWidth)/2;
+    var paddleX = (canvas.width - paddleWidth) / 2;
     var paddleColor = randomColor();
 
     var rightPressed = false;
@@ -68,18 +68,27 @@
         drawBall();
         drawPaddle();
 
-        if (y + dy < ballRadius || y + dy > canvas.height - ballRadius) {
+        if (y + dy < ballRadius) {
             ballColor = randomColor();
             dy = -dy;
+        } else if (y + dy > canvas.height - ballRadius) {
+            if (x > paddleX && x < paddleX + paddleWidth) {
+                if (y = y - paddleHeight) {
+                    dy = -dy;
+                }
+            } else {
+                alert('Game over');
+                document.location.reload();
+            }
         }
         if (x + dx < ballRadius || x + dx > canvas.width - ballRadius) {
             ballColor = randomColor();
             dx = -dx;
         }
-        if(rightPressed && paddleX < canvas.width - paddleWidth) {
+        if (rightPressed && paddleX < canvas.width - paddleWidth) {
             paddleX += 7;
         }
-        if(leftPressed && paddleX > 0) {
+        if (leftPressed && paddleX > 0) {
             paddleX -= 7;
         }
 
