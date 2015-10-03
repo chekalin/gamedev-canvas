@@ -2,6 +2,10 @@
   "name": "gamedev-canvas",
   "version": "1.0.0",
   "description": "2D breakout game",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chekalin/gamedev-canvas"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
