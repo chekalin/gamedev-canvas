@@ -54,6 +54,7 @@
     var rightPressed = false;
     var leftPressed = false;
 
+    var score = 0;
 
     function randomColor() {
         var r = Math.floor((Math.random() * 256));
@@ -96,6 +97,12 @@
         }
     }
 
+    function drawScore() {
+        ctx.font = '16px Arial';
+        ctx.fillStyle = '#0095DD';
+        ctx.fillText('Score: ' + score, 8, 20);
+    }
+
     function collisionDetection() {
         for (var c = 0; c < brickColumnCount; c++) {
             for (var r = 0; r < brickRowCount; r++) {
@@ -107,6 +114,11 @@
                         y < brick.y + brickHeight) {
                     dy = -dy;
                     brick.status = 'dead';
+                    score++;
+                    if (score == brickRowCount*brickColumnCount) {
+                        alert('You win!');
+                        document.location.reload();
+                    }
                 }
 
             }
@@ -118,6 +130,7 @@
         drawBall();
         drawPaddle();
         drawBricks();
+        drawScore();
         collisionDetection();
 
         if (y + dy < ballRadius) {
