@@ -22,10 +22,7 @@
     var canvas;
     var ctx;
 
-    var ballX;
-    var ballY;
-    var ballXVelocity;
-    var ballYVelocity;
+    var ball;
 
     var paddleX;
 
@@ -44,10 +41,12 @@
         score = 0;
         lives = 3;
 
-        ballX = canvas.width / 2;
-        ballY = canvas.height - 30;
-        ballXVelocity = STARTING_BALL_X_VELOCITY;
-        ballYVelocity = STARTING_BALL_Y_VELOCITY;
+        ball = new Ball(
+            new Point(canvas.width / 2, canvas.height - 30),
+            BALL_RADIUS,
+            STARTING_BALL_X_VELOCITY,
+            STARTING_BALL_Y_VELOCITY
+        );
 
         paddleX = (canvas.width - PADDLE_WIDTH) / 2;
 
@@ -107,7 +106,7 @@
 
         function drawBall() {
             ctx.beginPath();
-            ctx.arc(ballX, ballY, BALL_RADIUS, 0, Math.PI * 2);
+            ctx.arc(ball.centerPoint.x, ball.centerPoint.y, ball.radius, 0, Math.PI * 2);
             ctx.fillStyle = ELEMENT_COLOR;
             ctx.fill();
             ctx.closePath();
@@ -155,12 +154,12 @@
     function update() {
         collisionDetection();
 
-        if (ballY + ballYVelocity < BALL_RADIUS) {
-            ballYVelocity = -ballYVelocity;
-        } else if (ballY + ballYVelocity > canvas.height - BALL_RADIUS) {
-            if (ballX > paddleX && ballX < paddleX + PADDLE_WIDTH) {
-                if (ballY = ballY - PADDLE_HEIGHT) {
-                    ballYVelocity = -ballYVelocity;
+        if (ball.centerPoint.y + ball.yVelocity < ball.radius) {
+            ball.yVelocity = -ball.yVelocity;
+        } else if (ball.centerPoint.y + ball.yVelocity > canvas.height - ball.radius) {
+            if (ball.centerPoint.x > paddleX && ball.centerPoint.x < paddleX + PADDLE_WIDTH) {
+                if (ball.centerPoint.y = ball.centerPoint.y - PADDLE_HEIGHT) {
+                    ball.yVelocity = -ball.yVelocity;
                 }
             } else {
                 lives--;
@@ -168,16 +167,16 @@
                     alert('Game over');
                     document.location.reload();
                 } else {
-                    ballX = canvas.width / 2;
-                    ballY = canvas.height - 30;
-                    ballXVelocity = STARTING_BALL_X_VELOCITY;
-                    ballYVelocity = STARTING_BALL_Y_VELOCITY;
+                    ball.centerPoint.x = canvas.width / 2;
+                    ball.centerPoint.y = canvas.height - 30;
+                    ball.xVelocity = STARTING_BALL_X_VELOCITY;
+                    ball.yVelocity = STARTING_BALL_Y_VELOCITY;
                     paddleX = (canvas.width - PADDLE_WIDTH) / 2;
                 }
             }
         }
-        if (ballX + ballXVelocity < BALL_RADIUS || ballX + ballXVelocity > canvas.width - BALL_RADIUS) {
-            ballXVelocity = -ballXVelocity;
+        if (ball.centerPoint.x + ball.xVelocity < ball.radius || ball.centerPoint.x + ball.xVelocity > canvas.width - ball.radius) {
+            ball.xVelocity = -ball.xVelocity;
         }
         if (rightPressed && paddleX < canvas.width - PADDLE_WIDTH) {
             paddleX += 7;
@@ -186,8 +185,8 @@
             paddleX -= 7;
         }
 
-        ballX += ballXVelocity;
-        ballY += ballYVelocity;
+        ball.centerPoint.x += ball.xVelocity;
+        ball.centerPoint.y += ball.yVelocity;
 
         function collisionDetection() {
             for (var c = 0; c < BRICK_COLUMN_COUNT; c++) {
@@ -195,9 +194,9 @@
                     var brick = bricks [c][r];
                     if (brick.status === 'alive' &&
                         pointInRectangle(
-                            new Point(ballX, ballY),
+                            new Point(ball.centerPoint.x, ball.centerPoint.y),
                             new Rectangle(brick.x, brick.y, BRICK_WIDTH, BRICK_HEIGHT))) {
-                        ballYVelocity = -ballYVelocity;
+                        ball.yVelocity = -ball.yVelocity;
                         brick.status = 'dead';
                         score++;
                         if (score == BRICK_ROW_COUNT * BRICK_COLUMN_COUNT) {
@@ -216,11 +215,6 @@
                     point.y < rectangle.y + rectangle.height;
             }
 
-            function Point(x, y) {
-                this.x = x;
-                this.y = y;
-            }
-
             function Rectangle(x, y, width, height) {
                 this.x = x;
                 this.y = y;
@@ -228,6 +222,18 @@
                 this.height = height;
             }
         }
+    }
+
+    function Ball(centerPoint, radius, xVelocity, yVelocity) {
+        this.centerPoint = centerPoint;
+        this.radius = radius;
+        this.xVelocity = xVelocity;
+        this.yVelocity = yVelocity;
+    }
+
+    function Point(x, y) {
+        this.x = x;
+        this.y = y;
     }
 
     window.MainGame = {};
