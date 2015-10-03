@@ -2,6 +2,7 @@
 
 var DEFAULT_DX = 2;
 var DEFAULT_DY = -2;
+var color = '#0095DD';
 
 var canvas = document.getElementById('myCanvas');
 var ctx = canvas.getContext('2d');
@@ -11,12 +12,10 @@ var dx = DEFAULT_DX;
 var dy = DEFAULT_DY;
 
 var ballRadius = 10;
-var ballColor = randomColor();
 
 var paddleHeight = 10;
 var paddleWidth = 75;
 var paddleX = (canvas.width - paddleWidth) / 2;
-var paddleColor = randomColor();
 
 var brickRowCount = 3;
 var brickColumnCount = 5;
@@ -39,17 +38,10 @@ var leftPressed = false;
 var score = 0;
 var lives = 3;
 
-function randomColor() {
-    var r = Math.floor((Math.random() * 256));
-    var g = Math.floor((Math.random() * 256));
-    var b = Math.floor((Math.random() * 256));
-    return 'rgb(' + r + ',' + g + ',' + b + ')';
-}
-
 function drawBall() {
     ctx.beginPath();
     ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
-    ctx.fillStyle = ballColor;
+    ctx.fillStyle = color;
     ctx.fill();
     ctx.closePath();
 }
@@ -57,7 +49,7 @@ function drawBall() {
 function drawPaddle() {
     ctx.beginPath();
     ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
-    ctx.fillStyle = paddleColor;
+    ctx.fillStyle = color;
     ctx.fill();
     ctx.closePath();
 }
@@ -72,7 +64,7 @@ function drawBricks() {
                 bricks[c][r].y = brickY;
                 ctx.beginPath();
                 ctx.rect(brickX, brickY, brickWidth, brickHeight);
-                ctx.fillStyle = '#0095DD';
+                ctx.fillStyle = color;
                 ctx.fill();
                 ctx.closePath();
             }
@@ -124,7 +116,6 @@ function draw() {
     collisionDetection();
 
     if (y + dy < ballRadius) {
-        ballColor = randomColor();
         dy = -dy;
     } else if (y + dy > canvas.height - ballRadius) {
         if (x > paddleX && x < paddleX + paddleWidth) {
@@ -138,7 +129,7 @@ function draw() {
                 document.location.reload();
             } else {
                 x = canvas.width / 2;
-                y = canvas.height -30;
+                y = canvas.height - 30;
                 dx = DEFAULT_DX;
                 dy = DEFAULT_DY;
                 paddleX = (canvas.width - paddleWidth) / 2;
@@ -146,7 +137,6 @@ function draw() {
         }
     }
     if (x + dx < ballRadius || x + dx > canvas.width - ballRadius) {
-        ballColor = randomColor();
         dx = -dx;
     }
     if (rightPressed && paddleX < canvas.width - paddleWidth) {
