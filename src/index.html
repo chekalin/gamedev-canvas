@@ -115,7 +115,7 @@
                     dy = -dy;
                     brick.status = 'dead';
                     score++;
-                    if (score == brickRowCount*brickColumnCount) {
+                    if (score == brickRowCount * brickColumnCount) {
                         alert('You win!');
                         document.location.reload();
                     }
@@ -177,8 +177,16 @@
         }
     }
 
+    function mouseMoveHandler(e) {
+        var relativeX = e.clientX - canvas.offsetLeft;
+        if (relativeX > 0 && relativeX < canvas.width) {
+            paddleX = relativeX - paddleWidth / 2;
+        }
+    }
+
     document.addEventListener('keyup', keyUpHandler, false);
     document.addEventListener('keydown', keyDownHandler, false);
+    document.addEventListener('mousemove', mouseMoveHandler, false);
 
     setInterval(draw, 5);
 </script>
