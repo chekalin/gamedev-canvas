@@ -21,12 +21,15 @@
 <canvas id="myCanvas" width="480" height="320"></canvas>
 
 <script>
+    var DEFAULT_DX = 2;
+    var DEFAULT_DY = -2;
+
     var canvas = document.getElementById('myCanvas');
     var ctx = canvas.getContext('2d');
     var x = canvas.width / 2;
     var y = canvas.height - 30;
-    var dx = 1;
-    var dy = -1.5;
+    var dx = DEFAULT_DX;
+    var dy = DEFAULT_DY;
 
     var ballRadius = 10;
     var ballColor = randomColor();
@@ -55,6 +58,7 @@
     var leftPressed = false;
 
     var score = 0;
+    var lives = 3;
 
     function randomColor() {
         var r = Math.floor((Math.random() * 256));
@@ -103,6 +107,12 @@
         ctx.fillText('Score: ' + score, 8, 20);
     }
 
+    function drawLives() {
+        ctx.font = '16px Arial';
+        ctx.fillStyle = '#0095DD';
+        ctx.fillText('Lives: ' + lives, canvas.width - 65, 20);
+    }
+
     function collisionDetection() {
         for (var c = 0; c < brickColumnCount; c++) {
             for (var r = 0; r < brickRowCount; r++) {
@@ -131,6 +141,7 @@
         drawPaddle();
         drawBricks();
         drawScore();
+        drawLives();
         collisionDetection();
 
         if (y + dy < ballRadius) {
@@ -142,8 +153,17 @@
                     dy = -dy;
                 }
             } else {
-                alert('Game over');
-                document.location.reload();
+                lives--;
+                if (!lives) {
+                    alert('Game over');
+                    document.location.reload();
+                } else {
+                    x = canvas.width / 2;
+                    y = canvas.height -30;
+                    dx = DEFAULT_DX;
+                    dy = DEFAULT_DY;
+                    paddleX = (canvas.width - paddleWidth) / 2;
+                }
             }
         }
         if (x + dx < ballRadius || x + dx > canvas.width - ballRadius) {
@@ -159,6 +179,8 @@
 
         x += dx;
         y += dy;
+
+        requestAnimationFrame(draw);
     }
 
     function keyDownHandler(e) {
@@ -188,7 +210,7 @@
     document.addEventListener('keydown', keyDownHandler, false);
     document.addEventListener('mousemove', mouseMoveHandler, false);
 
-    setInterval(draw, 5);
+    draw();
 </script>
 
 </body>
