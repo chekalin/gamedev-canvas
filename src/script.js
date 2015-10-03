@@ -19,8 +19,8 @@
     var BRICK_OFFSET_TOP = 30;
     var BRICK_OFFSET_LEFT = 30;
 
-    var canvas = document.getElementById('myCanvas');
-    var ctx = canvas.getContext('2d');
+    var canvas;
+    var ctx;
 
     var ballX;
     var ballY;
@@ -38,6 +38,9 @@
     var lives;
 
     function startNewGame() {
+        canvas = document.getElementById('myCanvas');
+        ctx = canvas.getContext('2d');
+
         score = 0;
         lives = 3;
 
@@ -55,105 +58,101 @@
                 bricks[c][r] = {x: 0, y: 0, status: 'alive'};
             }
         }
-
-        draw();
+        registerControlHandlers();
+        main();
     }
 
-    function drawBall() {
-        ctx.beginPath();
-        ctx.arc(ballX, ballY, BALL_RADIUS, 0, Math.PI * 2);
-        ctx.fillStyle = ELEMENT_COLOR;
-        ctx.fill();
-        ctx.closePath();
-    }
+    function registerControlHandlers() {
+        document.addEventListener('keyup', keyUpHandler, false);
+        document.addEventListener('keydown', keyDownHandler, false);
+        document.addEventListener('mousemove', mouseMoveHandler, false);
 
-    function drawPaddle() {
-        ctx.beginPath();
-        ctx.rect(paddleX, canvas.height - PADDLE_HEIGHT, PADDLE_WIDTH, PADDLE_HEIGHT);
-        ctx.fillStyle = ELEMENT_COLOR;
-        ctx.fill();
-        ctx.closePath();
-    }
+        function keyDownHandler(e) {
+            if (e.keyCode == 39) {
+                rightPressed = true;
+            } else if (e.keyCode == 37) {
+                leftPressed = true;
+            }
+        }
 
-    function drawBricks() {
-        for (var c = 0; c < BRICK_COLUMN_COUNT; c++) {
-            for (var r = 0; r < BRICK_ROW_COUNT; r++) {
-                if (bricks[c][r].status === 'alive') {
-                    var brickX = (c * (BRICK_WIDTH + BRICK_PADDING)) + BRICK_OFFSET_LEFT;
-                    var brickY = (r * (BRICK_HEIGHT + BRICK_PADDING)) + BRICK_OFFSET_TOP;
-                    bricks[c][r].x = brickX;
-                    bricks[c][r].y = brickY;
-                    ctx.beginPath();
-                    ctx.rect(brickX, brickY, BRICK_WIDTH, BRICK_HEIGHT);
-                    ctx.fillStyle = ELEMENT_COLOR;
-                    ctx.fill();
-                    ctx.closePath();
-                }
+        function keyUpHandler(e) {
+            if (e.keyCode == 39) {
+                rightPressed = false;
+            } else if (e.keyCode == 37) {
+                leftPressed = false;
+            }
+        }
+
+        function mouseMoveHandler(e) {
+            var relativeX = e.clientX - canvas.offsetLeft;
+            if (relativeX > 0 && relativeX < canvas.width) {
+                paddleX = relativeX - PADDLE_WIDTH / 2;
             }
         }
     }
 
-    function drawScore() {
-        ctx.font = '16px Arial';
-        ctx.fillStyle = '#0095DD';
-        ctx.fillText('Score: ' + score, 8, 20);
+    function main() {
+        animationId = requestAnimationFrame(main);
+        render();
+        update();
     }
 
-    function drawLives() {
-        ctx.font = '16px Arial';
-        ctx.fillStyle = '#0095DD';
-        ctx.fillText('Lives: ' + lives, canvas.width - 65, 20);
-    }
-
-    function pointInRectangle(point, rectangle) {
-        return point.x > rectangle.x &&
-            point.x < rectangle.x + rectangle.width &&
-            point.y > rectangle.y &&
-            point.y < rectangle.y + rectangle.height;
-    }
-
-    function Point(x, y) {
-        this.x = x;
-        this.y = y;
-    }
-
-    function Rectangle(x, y, width, height) {
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
-    }
-
-    function collisionDetection() {
-        for (var c = 0; c < BRICK_COLUMN_COUNT; c++) {
-            for (var r = 0; r < BRICK_ROW_COUNT; r++) {
-                var brick = bricks [c][r];
-                if (brick.status === 'alive' &&
-                    pointInRectangle(
-                        new Point(ballX, ballY),
-                        new Rectangle(brick.x, brick.y, BRICK_WIDTH, BRICK_HEIGHT))) {
-                    ballYVelocity = -ballYVelocity;
-                    brick.status = 'dead';
-                    score++;
-                    if (score == BRICK_ROW_COUNT * BRICK_COLUMN_COUNT) {
-                        alert('You win!');
-                        document.location.reload();
-                    }
-                }
-
-            }
-        }
-    }
-
-    function draw() {
-        animationId = requestAnimationFrame(draw);
-
+    function render() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawBall();
         drawPaddle();
         drawBricks();
         drawScore();
         drawLives();
+
+        function drawBall() {
+            ctx.beginPath();
+            ctx.arc(ballX, ballY, BALL_RADIUS, 0, Math.PI * 2);
+            ctx.fillStyle = ELEMENT_COLOR;
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function drawPaddle() {
+            ctx.beginPath();
+            ctx.rect(paddleX, canvas.height - PADDLE_HEIGHT, PADDLE_WIDTH, PADDLE_HEIGHT);
+            ctx.fillStyle = ELEMENT_COLOR;
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function drawBricks() {
+            for (var c = 0; c < BRICK_COLUMN_COUNT; c++) {
+                for (var r = 0; r < BRICK_ROW_COUNT; r++) {
+                    if (bricks[c][r].status === 'alive') {
+                        var brickX = (c * (BRICK_WIDTH + BRICK_PADDING)) + BRICK_OFFSET_LEFT;
+                        var brickY = (r * (BRICK_HEIGHT + BRICK_PADDING)) + BRICK_OFFSET_TOP;
+                        bricks[c][r].x = brickX;
+                        bricks[c][r].y = brickY;
+                        ctx.beginPath();
+                        ctx.rect(brickX, brickY, BRICK_WIDTH, BRICK_HEIGHT);
+                        ctx.fillStyle = ELEMENT_COLOR;
+                        ctx.fill();
+                        ctx.closePath();
+                    }
+                }
+            }
+        }
+
+        function drawScore() {
+            ctx.font = '16px Arial';
+            ctx.fillStyle = '#0095DD';
+            ctx.fillText('Score: ' + score, 8, 20);
+        }
+
+        function drawLives() {
+            ctx.font = '16px Arial';
+            ctx.fillStyle = '#0095DD';
+            ctx.fillText('Lives: ' + lives, canvas.width - 65, 20);
+        }
+    }
+
+    function update() {
         collisionDetection();
 
         if (ballY + ballYVelocity < BALL_RADIUS) {
@@ -189,34 +188,47 @@
 
         ballX += ballXVelocity;
         ballY += ballYVelocity;
-    }
 
-    function keyDownHandler(e) {
-        if (e.keyCode == 39) {
-            rightPressed = true;
-        } else if (e.keyCode == 37) {
-            leftPressed = true;
+        function collisionDetection() {
+            for (var c = 0; c < BRICK_COLUMN_COUNT; c++) {
+                for (var r = 0; r < BRICK_ROW_COUNT; r++) {
+                    var brick = bricks [c][r];
+                    if (brick.status === 'alive' &&
+                        pointInRectangle(
+                            new Point(ballX, ballY),
+                            new Rectangle(brick.x, brick.y, BRICK_WIDTH, BRICK_HEIGHT))) {
+                        ballYVelocity = -ballYVelocity;
+                        brick.status = 'dead';
+                        score++;
+                        if (score == BRICK_ROW_COUNT * BRICK_COLUMN_COUNT) {
+                            alert('You win!');
+                            document.location.reload();
+                        }
+                    }
+
+                }
+            }
+
+            function pointInRectangle(point, rectangle) {
+                return point.x > rectangle.x &&
+                    point.x < rectangle.x + rectangle.width &&
+                    point.y > rectangle.y &&
+                    point.y < rectangle.y + rectangle.height;
+            }
+
+            function Point(x, y) {
+                this.x = x;
+                this.y = y;
+            }
+
+            function Rectangle(x, y, width, height) {
+                this.x = x;
+                this.y = y;
+                this.width = width;
+                this.height = height;
+            }
         }
     }
-
-    function keyUpHandler(e) {
-        if (e.keyCode == 39) {
-            rightPressed = false;
-        } else if (e.keyCode == 37) {
-            leftPressed = false;
-        }
-    }
-
-    function mouseMoveHandler(e) {
-        var relativeX = e.clientX - canvas.offsetLeft;
-        if (relativeX > 0 && relativeX < canvas.width) {
-            paddleX = relativeX - PADDLE_WIDTH / 2;
-        }
-    }
-
-    document.addEventListener('keyup', keyUpHandler, false);
-    document.addEventListener('keydown', keyDownHandler, false);
-    document.addEventListener('mousemove', mouseMoveHandler, false);
 
     window.MainGame = {};
     window.MainGame.newGame = function () {
@@ -230,7 +242,7 @@
             cancelAnimationFrame(animationId);
             animationId = null;
         } else {
-            draw();
+            main();
         }
     };
 })(window);
