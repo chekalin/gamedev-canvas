@@ -41,12 +41,7 @@
         score = 0;
         lives = 3;
 
-        ball = new Ball(
-            new Point(canvas.width / 2, canvas.height - 30),
-            BALL_RADIUS,
-            STARTING_BALL_X_VELOCITY,
-            STARTING_BALL_Y_VELOCITY
-        );
+        ball = createStartingBall();
 
         paddleX = (canvas.width - PADDLE_WIDTH) / 2;
 
@@ -154,12 +149,12 @@
     function update() {
         collisionDetection();
 
-        if (ball.centerPoint.y + ball.yVelocity < ball.radius) {
-            ball.yVelocity = -ball.yVelocity;
-        } else if (ball.centerPoint.y + ball.yVelocity > canvas.height - ball.radius) {
+        if (ball.centerPointAfterMove().y < ball.radius) {
+            ball.collideHorizontally();
+        } else if (ball.centerPointAfterMove().y > canvas.height - ball.radius) {
             if (ball.centerPoint.x > paddleX && ball.centerPoint.x < paddleX + PADDLE_WIDTH) {
                 if (ball.centerPoint.y = ball.centerPoint.y - PADDLE_HEIGHT) {
-                    ball.yVelocity = -ball.yVelocity;
+                    ball.collideHorizontally();
                 }
             } else {
                 lives--;
@@ -167,16 +162,13 @@
                     alert('Game over');
                     document.location.reload();
                 } else {
-                    ball.centerPoint.x = canvas.width / 2;
-                    ball.centerPoint.y = canvas.height - 30;
-                    ball.xVelocity = STARTING_BALL_X_VELOCITY;
-                    ball.yVelocity = STARTING_BALL_Y_VELOCITY;
+                    ball = createStartingBall();
                     paddleX = (canvas.width - PADDLE_WIDTH) / 2;
                 }
             }
         }
-        if (ball.centerPoint.x + ball.xVelocity < ball.radius || ball.centerPoint.x + ball.xVelocity > canvas.width - ball.radius) {
-            ball.xVelocity = -ball.xVelocity;
+        if (ball.centerPointAfterMove().x < ball.radius || ball.centerPointAfterMove().x > canvas.width - ball.radius) {
+            ball.collideVertically();
         }
         if (rightPressed && paddleX < canvas.width - PADDLE_WIDTH) {
             paddleX += 7;
@@ -185,8 +177,7 @@
             paddleX -= 7;
         }
 
-        ball.centerPoint.x += ball.xVelocity;
-        ball.centerPoint.y += ball.yVelocity;
+        ball.move();
 
         function collisionDetection() {
             for (var c = 0; c < BRICK_COLUMN_COUNT; c++) {
@@ -196,7 +187,7 @@
                         pointInRectangle(
                             new Point(ball.centerPoint.x, ball.centerPoint.y),
                             new Rectangle(brick.x, brick.y, BRICK_WIDTH, BRICK_HEIGHT))) {
-                        ball.yVelocity = -ball.yVelocity;
+                        ball.collideHorizontally();
                         brick.status = 'dead';
                         score++;
                         if (score == BRICK_ROW_COUNT * BRICK_COLUMN_COUNT) {
@@ -224,16 +215,13 @@
         }
     }
 
-    function Ball(centerPoint, radius, xVelocity, yVelocity) {
-        this.centerPoint = centerPoint;
-        this.radius = radius;
-        this.xVelocity = xVelocity;
-        this.yVelocity = yVelocity;
-    }
-
-    function Point(x, y) {
-        this.x = x;
-        this.y = y;
+    function createStartingBall() {
+        return new Ball(
+            new Point(canvas.width / 2, canvas.height - 30),
+            BALL_RADIUS,
+            STARTING_BALL_X_VELOCITY,
+            STARTING_BALL_Y_VELOCITY
+        );
     }
 
     window.MainGame = {};
