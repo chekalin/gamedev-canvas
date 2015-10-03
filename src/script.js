@@ -1,5 +1,7 @@
-(function () {
+(function (window) {
     'use strict';
+
+    var animationId;
 
     var DEFAULT_DX = 2;
     var DEFAULT_DY = -2;
@@ -150,7 +152,7 @@
         x += dx;
         y += dy;
 
-        requestAnimationFrame(draw);
+        animationId = requestAnimationFrame(draw);
     }
 
     function keyDownHandler(e) {
@@ -180,6 +182,11 @@
     document.addEventListener('keydown', keyDownHandler, false);
     document.addEventListener('mousemove', mouseMoveHandler, false);
 
-    draw();
-
-})();
+    window.MainGame = {};
+    window.MainGame.start = function() {
+        draw();
+    };
+    window.MainGame.pause = function() {
+        cancelAnimationFrame(animationId);
+    };
+})(window);

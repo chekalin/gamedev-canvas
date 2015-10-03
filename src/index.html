@@ -6,9 +6,19 @@
     <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 <body>
-
-<canvas id="myCanvas" width="480" height="320"></canvas>
-
+<div class="content">
+    <div class="menu">
+        <ul>
+            <li>
+                <button type="button" onclick="MainGame.start()">Start</button>
+            </li>
+            <li>
+                <button type="button" onclick="MainGame.pause()">Pause</button>
+            </li>
+        </ul>
+    </div>
+    <canvas id="myCanvas" width="480" height="320"></canvas>
+</div>
 <script src="script.js"></script>
 
 </body>

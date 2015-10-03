@@ -3,8 +3,27 @@
     margin: 0
 }
 
+.content {
+    margin: auto;
+    width: 600px;
+}
+
+.menu {
+    float: left;
+}
+
+.menu ul {
+    list-style-type: none;
+}
+
+.menu button {
+    font-size: large;
+    padding: 5px;
+    margin: 5px;
+    width: 70px;
+}
+
 canvas {
     background: #eee;
     display: block;
-    margin: 0 auto;
 }
