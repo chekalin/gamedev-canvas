@@ -5,10 +5,11 @@
 
 .content {
     margin: auto;
-    width: 600px;
+    width: 640px;
 }
 
 .menu {
+    padding-top: 10px;
     float: left;
 }
 
@@ -20,7 +21,7 @@
     font-size: large;
     padding: 5px;
     margin: 5px;
-    width: 70px;
+    width: 120px;
 }
 
 canvas {
